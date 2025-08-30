@@ -4,12 +4,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'git@github.com:herilshah/python-selenium-tests.git'
+                git branch: 'main', url: 'git@github.com:herilshah/python-selenium-tests.git'
             }
         }
 
-        stage('Setup Python Environment') {
+        stage('Set up Environment') {
             steps {
                 sh '''
                     python3 -m venv venv
@@ -24,15 +23,15 @@ pipeline {
             steps {
                 sh '''
                     . venv/bin/activate
-                    pytest --maxfail=1 --disable-warnings -q
+                    pytest --maxfail=1 --disable-warnings -q \
+                           --junitxml=results.xml
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            junit '**/test-results.xml'  
+            post {
+                always {
+                    junit 'results.xml'
+                }
+            }
         }
     }
 }
